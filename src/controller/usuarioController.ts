@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
 import { UserBusiness } from "../business/usuarioBusiness";
+import { FilterUtils } from '../utils/FilterUtils';
 
 export class UserController {
     private userBusiness = new UserBusiness();
 
-    public getAll = async (req: Request, res: Response) => {
+   public getAll = async (req: Request, res: Response) => {
         try {
-            const users = await this.userBusiness.getAllUsers();
+            const filter = FilterUtils.parseUserFilter(req.query); 
+            
+            const users = await this.userBusiness.getAllUsers(filter);
+            
             res.status(200).send(users);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
         }
     }
-
     public getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
