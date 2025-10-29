@@ -31,7 +31,7 @@ export class FilterUtils {
         };
     }
 
-    // --- Lógica para ANIMAL ---
+    // Lógica para ANIMAL 
     private static readonly DEFAULT_ANIMAL_SORT_BY = 'id_animal';
     private static readonly DEFAULT_ANIMAL_SORT_ORDER = 'asc';
 
@@ -61,7 +61,7 @@ export class FilterUtils {
         };
     }
 
-    // --- Lógica para ONG ---
+    // Lógica para ONG 
     private static readonly DEFAULT_ONG_SORT_BY = 'id_ong';
     private static readonly DEFAULT_ONG_SORT_ORDER = 'asc';
 
@@ -87,7 +87,7 @@ export class FilterUtils {
         };
     }
 
-    // --- Lógica para ADOÇÃO ---
+    // Lógica para ADOÇÃO 
     private static readonly DEFAULT_ADOCAO_SORT_BY = 'id_adocao';
     private static readonly DEFAULT_ADOCAO_SORT_ORDER = 'asc';
 
@@ -117,7 +117,7 @@ export class FilterUtils {
         };
     }
 
-    // --- Lógica para PRIORIDADE ---
+    // Lógica para PRIORIDADE 
     private static readonly DEFAULT_PRIORIDADE_SORT_BY = 'id_prioridade';
     private static readonly DEFAULT_PRIORIDADE_SORT_ORDER = 'asc';
 
