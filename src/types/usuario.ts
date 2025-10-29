@@ -1,8 +1,8 @@
-export type User = {
+export interface Usuario {
     id_usuario: number;
-    nome: string;
-    email: string;
-    senha: string; 
+    senha: string;
     tipo: string;
-    data_criacao: Date; 
-};
+    nome: string;
+    data_criacao: Date;
+    email: string;
+}
