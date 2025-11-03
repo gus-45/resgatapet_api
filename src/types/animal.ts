@@ -1,6 +1,4 @@
-// 📝 src/models/Animal.ts
-
-export type Animal = {
+export interface Animal {
   id_animal: number;
   nome: string;
   especie: string;
