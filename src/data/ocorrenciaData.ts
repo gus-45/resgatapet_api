@@ -57,4 +57,12 @@ export class OcorrenciaData {
             throw new Error(error.sqlMessage || error.message);
         }
     }
+
+    public async createOcorrencia(ocorrencia: Omit<Ocorrencia, "id_ocorrencia" | "data_registro">): Promise<void> {
+        try {
+            await connection("Ocorrencia").insert(ocorrencia);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
 }

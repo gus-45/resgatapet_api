@@ -31,4 +31,26 @@ export class OcorrenciaController {
             res.status(500).send({ error: error.message });
         }
     }
+    public create = async (req: Request, res: Response) => {
+        try {
+            const { 
+                descricao, 
+                localizacao, 
+                foto_url, 
+                usuario_id 
+            } = req.body;
+            await this.ocorrenciaBusiness.createOcorrencia({
+                descricao, 
+                localizacao, 
+                foto_url, 
+                usuario_id: usuario_id || 0 
+            });
+            res.status(201).send({ message: "Ocorrência registrada com sucesso! A comunidade e ONGs serão notificadas." });
+        } catch (error: any) {
+            if (error.message.includes("obrigatórios")) {
+                return res.status(400).send({ error: error.message });
+            }
+            res.status(500).send({ error: error.message });
+        }
+    }
 }
