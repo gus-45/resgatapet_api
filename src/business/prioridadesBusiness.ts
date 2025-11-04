@@ -2,14 +2,14 @@ import { PrioridadeData } from "../data/prioridadesData";
 import { Prioridade } from "../types/prioridades";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { PrioridadeFilterDTO } from "../dto/prioridadeFilterDto";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsPrioridades } from '../utils/FilterUtilsPrioridades'; 
 
 export class PrioridadeBusiness {
     private prioridadeData = new PrioridadeData(); 
 
     public async getAllPrioridades(filter: PrioridadeFilterDTO): Promise<PaginatedResponse<Prioridade>> { 
         try{
-            const completeFilter = FilterUtils.applyPrioridadeDefaults(filter);
+            const completeFilter = FilterUtilsPrioridades.applyDefaults(filter);
             
             const prioridades = await this.prioridadeData.getAllPrioridades(completeFilter); 
             return prioridades;

@@ -24,7 +24,6 @@ export class AdocaoData {
                 query = query.where('animal_id', animal_id); 
             }
 
-            // Contagem Total 
             const countQuery = query.clone();
             const [{ total }] = await countQuery.count('* as total'); 
 
@@ -35,7 +34,6 @@ export class AdocaoData {
 
             const data = await query;
 
-            // Montar o objeto de resposta paginada
             const totalPages = Math.ceil(Number(total) / limit); 
             const pagination: PaginatedResponse<Adocao> = {
                 pageInfo: {
@@ -53,7 +51,6 @@ export class AdocaoData {
         }
     }
 
-    // Busca uma adoção por ID
     public async getAdocaoById(id_adocao: number): Promise<Adocao | undefined> {
         try {
             const adocao = await connection('adocao').where({ id_adocao }).first();

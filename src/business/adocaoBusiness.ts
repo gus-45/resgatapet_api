@@ -2,14 +2,14 @@ import { AdocaoData } from "../data/adocaoData";
 import { Adocao } from "../types/adocao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AdocaoFilterDTO } from "../dto/adocaoFilterDto";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsAdocao } from '../utils/FilterUtilsAdocao'; 
 
 export class AdocaoBusiness {
     private adocaoData = new AdocaoData(); 
 
     public async getAllAdocoes(filter: AdocaoFilterDTO): Promise<PaginatedResponse<Adocao>> { 
         try{
-            const completeFilter = FilterUtils.applyAdocaoDefaults(filter);
+            const completeFilter = FilterUtilsAdocao.applyDefaults(filter);
             
             const adocoes = await this.adocaoData.getAllAdocoes(completeFilter); 
             return adocoes;
