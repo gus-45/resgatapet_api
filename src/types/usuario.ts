@@ -5,4 +5,5 @@ export interface User {
     nome: string;
     data_criacao: Date;
     email: string;
+    
 }
