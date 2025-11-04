@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { AdocaoBusiness } from "../business/adocaoBusiness";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsAdocao } from '../utils/FilterUtilsAdocao'; 
 
 export class AdocaoController {
     private adocaoBusiness = new AdocaoBusiness();
 
     public getAll = async (req: Request, res: Response) => {
         try {
-            const filter = FilterUtils.parseAdocaoFilter(req.query);
+            const filter = FilterUtilsAdocao.applyDefaults(req.query);
             
-            // Chama a Business
             const adocoes = await this.adocaoBusiness.getAllAdocoes(filter);
             
             res.status(200).send(adocoes);
@@ -18,7 +17,6 @@ export class AdocaoController {
         }
     }
 
-    // /adocoes/:id - Busca por ID
     public getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
@@ -40,4 +38,22 @@ export class AdocaoController {
             res.status(500).send({ error: error.message });
         }
     }
+
+    public create = async (req: Request, res: Response) => {
+        try {
+            const { animal_id, usuario_id, ong_id, status } = req.body;
+
+            await this.adocaoBusiness.createAdocao({
+                animal_id,
+                usuario_id,
+                ong_id,
+                status,
+                data_solicitacao: new Date(),
+            });
+
+            res.status(201).send({ message: "Solicitação de adoção registrada com sucesso!" });
+        } catch (error: any) {
+            res.status(400).send({ error: error.message });
+        }
+    };
 }

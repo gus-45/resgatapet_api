@@ -59,4 +59,11 @@ export class AdocaoData {
             throw new Error(error.sqlMessage || error.message);
         }
     }
+    public async createAdocao(adocao: Omit<Adocao, "id_adocao">): Promise<void> {
+        try {
+            await connection("Adocao").insert(adocao);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
 }

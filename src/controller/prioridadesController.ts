@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { PrioridadeBusiness } from "../business/prioridadesBusiness";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsPrioridades } from '../utils/FilterUtilsPrioridades'; 
 
 export class PrioridadeController {
     private prioridadeBusiness = new PrioridadeBusiness();
 
     public getAll = async (req: Request, res: Response) => {
         try {
-            const filter = FilterUtils.parsePrioridadeFilter(req.query);
-            
-            // Chama a Business
+            const filter = FilterUtilsPrioridades.applyDefaults(req.query);
+        
             const prioridades = await this.prioridadeBusiness.getAllPrioridades(filter);
             
             res.status(200).send(prioridades);
@@ -18,7 +17,6 @@ export class PrioridadeController {
         }
     }
 
-    // /prioridades/:id - Busca por ID
     public getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;

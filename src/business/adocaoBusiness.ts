@@ -26,4 +26,18 @@ export class AdocaoBusiness {
             throw new Error(error.message);
         }
     }
+
+    public async createAdocao(input: Omit<Adocao, "id_adocao">): Promise<void> {
+        try {
+            if (!input.animal_id || !input.usuario_id || !input.status) {
+                throw new Error("Campos obrigatórios ausentes (animal_id, usuario_id, status)");
+            }
+
+            input.data_solicitacao = new Date();
+
+            await this.adocaoData.createAdocao(input);
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 }

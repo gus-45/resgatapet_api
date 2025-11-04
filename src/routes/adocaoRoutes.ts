@@ -7,3 +7,4 @@ const adocaoController = new AdocaoController();
 
 adocaoRouter.get('/', adocaoController.getAll); 
 adocaoRouter.get('/:id', adocaoController.getById);
+adocaoRouter.post("/", adocaoController.create);
