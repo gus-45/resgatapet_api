@@ -1,9 +1,17 @@
 import express from 'express';
 import { DoacaoController } from '../controller/doacaoController';
+import { AuthMiddleware } from '../middlewares/authMiddleware';
+import { AuthorizationMiddleware } from '../middlewares/authorizationMiddleware';
 
 export const doacaoRouter = express.Router();
 
 const doacaoController = new DoacaoController();
 
-doacaoRouter.get('/', doacaoController.getAll); 
+//Lista todas as doações (Público, com filtros)
+doacaoRouter.get('/', doacaoController.getAll);
+
+// Busca por ID (Público)
 doacaoRouter.get('/:id', doacaoController.getById);
+
+//Registra uma doação (Usuário Comum autenticado ou anônimo)
+doacaoRouter.post('/', doacaoController.create);

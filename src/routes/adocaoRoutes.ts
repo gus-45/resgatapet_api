@@ -1,10 +1,23 @@
 import express from 'express';
 import { AdocaoController } from '../controller/adocaoController';
+import { AuthMiddleware } from '../middlewares/authMiddleware';
+import { AuthorizationMiddleware } from '../middlewares/authorizationMiddleware';
 
 export const adocaoRouter = express.Router();
 
 const adocaoController = new AdocaoController();
 
-adocaoRouter.get('/', adocaoController.getAll); 
-adocaoRouter.get('/:id', adocaoController.getById);
-adocaoRouter.post("/", adocaoController.create);
+// Lista todas (ONG, Admin)
+adocaoRouter.get('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ong', 'admin'), adocaoController.getAll);
+
+// Busca por ID (Usuário, ONG, Admin)
+adocaoRouter.get('/:id', AuthMiddleware.authenticate, adocaoController.getById);
+
+// Cria (Usuário Comum autenticado)
+adocaoRouter.post("/", AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('comum'), adocaoController.create);
+
+//  Atualiza status (ONG, Admin)
+adocaoRouter.put('/:id/status', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ong', 'admin'), adocaoController.updateStatus);
+
+// Remove (Admin - apenas Admin pode remover)
+adocaoRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), adocaoController.delete);
