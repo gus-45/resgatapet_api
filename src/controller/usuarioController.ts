@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { UserBusiness } from "../business/usuarioBusiness";
-import { FilterUtils } from '../utils/FilterUtils';
+import { FilterUtilsUsuario } from '../utils/FilterUtilsUsuario';
 
 export class UserController {
     private userBusiness = new UserBusiness();
 
    public getAll = async (req: Request, res: Response) => {
         try {
-            const filter = FilterUtils.parseUserFilter(req.query); 
+            const filter = FilterUtilsUsuario.parseUserFilter(req.query); 
             
             const users = await this.userBusiness.getAllUsers(filter);
             

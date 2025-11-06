@@ -3,6 +3,7 @@ import connection from "../dbConnection";
 import { Ocorrencia } from "../types/ocorrencia"; 
 import { PaginatedResponse } from "../dto/paginationDto"; 
 import { OcorrenciaFilterDTO } from "../dto/ocorrenciaFilterDto"; 
+
 export class OcorrenciaData {
 
     public async getAllOcorrencias(filter: Required<OcorrenciaFilterDTO>): Promise<PaginatedResponse<Ocorrencia>> { 

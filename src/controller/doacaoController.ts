@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { DoacaoBusiness } from "../business/doacaoBusiness";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsDoacao } from '../utils/filterUtilsDoacao'; 
 
 export class DoacaoController {
     private doacaoBusiness = new DoacaoBusiness();
 
     public getAll = async (req: Request, res: Response) => {
         try {
-            const filter = FilterUtils.parseDoacaoFilter(req.query);
+            const filter = FilterUtilsDoacao.parseDoacaoFilter(req.query);
             
             const doacoes = await this.doacaoBusiness.getAllDoacoes(filter);
             

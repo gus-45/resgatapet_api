@@ -1,4 +1,3 @@
-
 import { PaginationParams } from './paginationDto'; 
 
 export interface OcorrenciaFilterDTO extends PaginationParams {

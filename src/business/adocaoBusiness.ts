@@ -2,7 +2,7 @@ import { AdocaoData } from "../data/adocaoData";
 import { Adocao } from "../types/adocao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AdocaoFilterDTO } from "../dto/adocaoFilterDto";
-import { FilterUtilsAdocao } from '../utils/FilterUtilsAdocao'; 
+import { FilterUtilsAdocao } from '../utils/filterUtilsAdocao'; 
 
 export class AdocaoBusiness {
     private adocaoData = new AdocaoData(); 

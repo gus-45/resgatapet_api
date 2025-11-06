@@ -2,7 +2,7 @@ import { PrioridadeData } from "../data/prioridadesData";
 import { Prioridade } from "../types/prioridades";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { PrioridadeFilterDTO } from "../dto/prioridadeFilterDto";
-import { FilterUtilsPrioridades } from '../utils/FilterUtilsPrioridades'; 
+import { FilterUtilsPrioridades } from '../utils/filterUtilsPrioridades'; 
 
 export class PrioridadeBusiness {
     private prioridadeData = new PrioridadeData(); 

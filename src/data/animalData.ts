@@ -1,7 +1,7 @@
 import connection from "../dbConnection";
 
 import { PaginatedResponse } from "../dto/paginationDto";
-import { AnimalFilterDTO } from "../dto/userFilterDto";
+import { AnimalFilterDTO } from "../dto/animalFilterDto";
 import { Animal } from "../types/animal";
 
 export class AnimalData {

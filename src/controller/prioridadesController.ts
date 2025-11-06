@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PrioridadeBusiness } from "../business/prioridadesBusiness";
-import { FilterUtilsPrioridades } from '../utils/FilterUtilsPrioridades'; 
+import { FilterUtilsPrioridades } from '../utils/filterUtilsPrioridades'; 
 
 export class PrioridadeController {
     private prioridadeBusiness = new PrioridadeBusiness();

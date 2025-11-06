@@ -2,14 +2,14 @@ import { UserData } from "../data/usuarioData";
 import { User } from "../types/usuario";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { UserFilterDTO } from "../dto/userFilterDto"; 
-import { FilterUtils } from '../utils/FilterUtils'; 
+import {FilterUtilsUsuario} from '../utils/FilterUtilsUsuario'; 
 
 export class UserBusiness {
     private userData = new UserData(); 
 
     public async getAllUsers(filter: UserFilterDTO): Promise<PaginatedResponse<User>> { 
         try{
-            const completeFilter = FilterUtils.applyUserDefaults(filter); 
+            const completeFilter = FilterUtilsUsuario.applyUserDefaults(filter); 
             
             const users = await this.userData.getAllUsers(completeFilter); 
             return users;  

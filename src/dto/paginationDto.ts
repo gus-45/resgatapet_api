@@ -6,7 +6,7 @@ export interface PageInfo {
 }
 
 export interface PaginatedResponse<T> {
-    data: T[]; //  array de dados (Usuários, Pets, etc.)
+    data: T[];
     pageInfo: PageInfo;
 }
 

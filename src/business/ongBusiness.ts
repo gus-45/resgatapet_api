@@ -2,14 +2,14 @@ import { OngData } from "../data/ongData";
 import { Ong } from "../types/ong";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OngFilterDTO } from "../dto/ongFilterDto";
-import { FilterUtils } from '../utils/FilterUtils'; 
+import { FilterUtilsOng } from '../utils/filterUtilsOng'; 
 
 export class OngBusiness {
     private ongData = new OngData(); 
 
     public async getAllOngs(filter: OngFilterDTO): Promise<PaginatedResponse<Ong>> { 
         try{
-            const completeFilter = FilterUtils.applyOngDefaults(filter);
+            const completeFilter = FilterUtilsOng.applyOngDefaults(filter);
             
             const ongs = await this.ongData.getAllOngs(completeFilter); 
             return ongs;
