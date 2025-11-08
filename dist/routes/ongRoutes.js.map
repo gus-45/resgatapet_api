@@ -1,1 +1,0 @@
-{"version":3,"file":"ongRoutes.js","sourceRoot":"","sources":["../../src/routes/ongRoutes.ts"],"names":[],"mappings":";;;;;;AAAA,sDAA6B;AAC7B,+DAA4D;AAE/C,QAAA,SAAS,GAAG,iBAAO,CAAC,MAAM,EAAE,CAAC;AAE1C,MAAM,aAAa,GAAG,IAAI,6BAAa,EAAE,CAAC;AAE1C,iBAAS,CAAC,GAAG,CAAC,GAAG,EAAE,aAAa,CAAC,MAAM,CAAC,CAAC;AACzC,iBAAS,CAAC,GAAG,CAAC,MAAM,EAAE,aAAa,CAAC,OAAO,CAAC,CAAC"}
