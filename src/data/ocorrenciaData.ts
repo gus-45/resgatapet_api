@@ -66,4 +66,26 @@ export class OcorrenciaData {
             throw new Error(error.sqlMessage || error.message);
         }
     }
+
+    public async updateOcorrenciaStatus(id_ocorrencia: number, status: string, ong_id?: number): Promise<void> {
+        try {
+            const updateData: { status: string, ong_id?: number } = { status };
+            // Se a ONG está resgatando, associamos a ONG_ID (FK) 
+            if (ong_id) {
+                updateData.ong_id = ong_id;
+            }
+
+            await connection('Ocorrencia').where({ id_ocorrencia }).update(updateData);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async deleteOcorrencia(id_ocorrencia: number): Promise<void> {
+        try {
+            await connection('Ocorrencia').where({ id_ocorrencia }).del();
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
 }

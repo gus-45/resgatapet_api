@@ -4,9 +4,19 @@ import { PaginatedResponse } from "../dto/paginationDto";
 import { AnimalFilterDTO } from "../dto/animalFilterDto";
 import { Animal } from "../types/animal";
 
+// atributos necessários para criar um Animal no banco sem o id_animal e o data que é gerada automaticamente
+type AnimalInputForDB = {
+    nome: string;
+    especie: string;
+    descricao: string;
+    status: string;
+    localizacao: string;
+    ong_id: number;
+}
+
 export class AnimalData {
 
-    public async getAllAnimals(filter: Required<AnimalFilterDTO>): Promise<PaginatedResponse<Animal>> { 
+    public async getAllAnimals(filter: Required<AnimalFilterDTO>): Promise<PaginatedResponse<Animal>> {
         try {
             const { nome, especie, status, ong_id, page, limit, sortBy, sortOrder } = filter;
 
@@ -21,21 +31,21 @@ export class AnimalData {
             if (status) {
                 query = query.where({ status });
             }
-            if (ong_id && ong_id !== 0) { 
+            if (ong_id && ong_id !== 0) {
                 query = query.where({ ong_id });
             }
 
             const countQuery = query.clone();
-            const [{ total }] = await countQuery.count('* as total'); 
+            const [{ total }] = await countQuery.count('* as total');
 
             query = query.orderBy(sortBy, sortOrder);
 
-            const offset = (page - 1) * limit; 
+            const offset = (page - 1) * limit;
             query = query.limit(limit).offset(offset);
 
             const data = await query;
 
-            const totalPages = Math.ceil(Number(total) / limit); 
+            const totalPages = Math.ceil(Number(total) / limit);
             const pagination: PaginatedResponse<Animal> = {
                 pageInfo: {
                     total: Number(total),
@@ -46,7 +56,7 @@ export class AnimalData {
                 data: data as Animal[]
             };
 
-            return pagination; 
+            return pagination;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
@@ -57,6 +67,31 @@ export class AnimalData {
         try {
             const animal = await connection('Animal').where({ id_animal }).first();
             return animal as Animal | undefined;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async createAnimal(animal: AnimalInputForDB): Promise<number> {
+        try {
+            const [id_animal] = await connection('Animal').insert(animal);
+            return id_animal;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async updateAnimal(id_animal: number, animal: AnimalInputForDB): Promise<void> {
+        try {
+            await connection('Animal').where({ id_animal }).update(animal);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async deleteAnimal(id_animal: number): Promise<void> {
+        try {
+            await connection('Animal').where({ id_animal }).del();
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }

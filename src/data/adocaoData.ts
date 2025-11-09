@@ -66,4 +66,21 @@ export class AdocaoData {
             throw new Error(error.sqlMessage || error.message);
         }
     }
+
+    public async updateAdocaoStatus(id_adocao: number, status: string): Promise<void> {
+        try {
+            // aceita ou não a adoção
+            await connection('adocao').where({ id_adocao }).update({ status });
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async deleteAdocao(id_adocao: number): Promise<void> {
+        try {
+            await connection('adocao').where({ id_adocao }).del();
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
 }
