@@ -3,34 +3,43 @@ import { Ong } from "../types/ong";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OngFilterDTO } from "../dto/ongFilterDto";
 
+// atributos necessários para criar uma ONG no banco sem o id_ong
+type OngInputForDB = {
+    nome: string;
+    email: string;
+    endereco: string;
+    telefone: string;
+    usuario_id: number; // chave estrangeira para Usuario 
+}
+
 export class OngData {
 
-    public async getAllOngs(filter: Required<OngFilterDTO>): Promise<PaginatedResponse<Ong>> { 
+    public async getAllOngs(filter: Required<OngFilterDTO>): Promise<PaginatedResponse<Ong>> {
         try {
             const { nome, cidade, page, limit, sortBy, sortOrder } = filter;
 
-            let query = connection('ONG').select(); 
+            let query = connection('ONG').select();
 
             if (nome) {
-                query = query.where('nome', 'like', `\%${nome}\%`); 
+                query = query.where('nome', 'like', `\%${nome}\%`);
             }
             if (cidade) {
-                query = query.where('cidade', 'like', `\%${cidade}\%`); 
+                query = query.where('cidade', 'like', `\%${cidade}\%`);
             }
 
             // Contagem Total 
             const countQuery = query.clone();
-            const [{ total }] = await countQuery.count('* as total'); 
+            const [{ total }] = await countQuery.count('* as total');
 
             query = query.orderBy(sortBy, sortOrder);
 
-            const offset = (page - 1) * limit; 
+            const offset = (page - 1) * limit;
             query = query.limit(limit).offset(offset);
 
             const data = await query;
 
             // Montar o objeto de resposta paginada
-            const totalPages = Math.ceil(Number(total) / limit); 
+            const totalPages = Math.ceil(Number(total) / limit);
             const pagination: PaginatedResponse<Ong> = {
                 pageInfo: {
                     total: Number(total),
@@ -41,7 +50,7 @@ export class OngData {
                 data: data as Ong[]
             };
 
-            return pagination; 
+            return pagination;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
@@ -52,6 +61,40 @@ export class OngData {
         try {
             const ong = await connection('ONG').where({ id_ong }).first();
             return ong as Ong | undefined;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async getOngByEmail(email: string): Promise<Ong | undefined> {
+        try {
+            const ong = await connection('ONG').where({ email }).first();
+            return ong as Ong | undefined;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async createOng(ong: OngInputForDB): Promise<number> {
+        try {
+            const [id_ong] = await connection('ONG').insert(ong);
+            return id_ong;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async updateOng(id_ong: number, ong: OngInputForDB): Promise<void> {
+        try {
+            await connection('ONG').where({ id_ong }).update(ong);
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async deleteOng(id_ong: number): Promise<void> {
+        try {
+            await connection('ONG').where({ id_ong }).del();
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
