@@ -4,6 +4,12 @@ import { PaginatedResponse } from "../dto/paginationDto";
 import { PrioridadeFilterDTO } from "../dto/prioridadeFilterDto";
 import { FilterUtilsPrioridades } from "../utils/filterUtilsPrioridades";
 
+//tipo simples para passar os atributos necessários para criar/atualizar 
+type PrioridadeInput = {
+    animal_id?: number;
+    descricao: string;
+    nivel: string;
+};
 export class PrioridadeBusiness {
     private prioridadeData = new PrioridadeData();
 
@@ -26,9 +32,8 @@ export class PrioridadeBusiness {
         }
     }
 
-    public async createPrioridade(input: Omit<Prioridade, "id_prioridade">): Promise<Prioridade> {
+    public async createPrioridade(input: PrioridadeInput): Promise<Prioridade> {
         try {
-            // Validação de campos (RF09)
             if (!input.nivel || !input.descricao) {
                 throw new Error("Campos obrigatorios ausentes: nivel e descricao.");
             }
@@ -40,10 +45,9 @@ export class PrioridadeBusiness {
         }
     }
 
-    // NOVO: Atualiza uma categoria de prioridade (Admin)
     public async updatePrioridade(
         id_prioridade: number,
-        input: Omit<Prioridade, "id_prioridade">
+        input: PrioridadeInput 
     ): Promise<void> {
         try {
             const prioridade = await this.prioridadeData.getPrioridadeById(id_prioridade);
@@ -51,7 +55,6 @@ export class PrioridadeBusiness {
                 throw new Error("Prioridade nao encontrada.");
             }
 
-            // Validação de campos (RF09)
             if (!input.nivel || !input.descricao) {
                 throw new Error("Campos obrigatorios ausentes: nivel e descricao.");
             }
