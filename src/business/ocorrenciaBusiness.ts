@@ -48,4 +48,35 @@ export class OcorrenciaBusiness {
             throw new Error(error.message);
         }
     }
+
+    public async updateOcorrenciaStatus(id_ocorrencia: number, status: string): Promise<void> {
+        try {
+            const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
+            if (!ocorrencia) {
+                throw new Error("Ocorrência não encontrada.");
+            }
+
+            const statusPermitidos = ["resolvido", "em andamento", "cancelado", "encontrado"];
+            if (!statusPermitidos.includes(status)) {
+                throw new Error("Status de ocorrência inválido.");
+            }
+
+            await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    public async deleteOcorrencia(id_ocorrencia: number): Promise<void> {
+        try {
+            const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
+            if (!ocorrencia) {
+                throw new Error("Ocorrência não encontrada.");
+            }
+
+            await this.ocorrenciaData.deleteOcorrencia(id_ocorrencia);
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 }
