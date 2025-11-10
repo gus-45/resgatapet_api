@@ -4,5 +4,5 @@ export interface Ong {
     email: string;
     endereco: string;
     telefone: string;
-    usuario_id?: number;
+    usuario_id: number;
 }

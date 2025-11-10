@@ -4,12 +4,12 @@ import { PaginatedResponse } from "../dto/paginationDto";
 import { PrioridadeFilterDTO } from "../dto/prioridadeFilterDto";
 import { FilterUtilsPrioridades } from "../utils/filterUtilsPrioridades";
 
-//tipo simples para passar os atributos necessários para criar/atualizar 
 type PrioridadeInput = {
     animal_id?: number;
     descricao: string;
     nivel: string;
 };
+
 export class PrioridadeBusiness {
     private prioridadeData = new PrioridadeData();
 
