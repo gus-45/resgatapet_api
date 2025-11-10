@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { OngBusiness } from "../business/ongBusiness";
 import { FilterUtilsOng } from "../utils/filterUtilsOng";
+import { ErrorUtils } from "../utils/ErrorUtils"; 
+import { ApiResponse } from "../types/ApiResponse"; 
+import { Ong } from "../types/ong";
 
 export class OngController {
     private ongBusiness = new OngBusiness();

@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { DoacaoBusiness } from "../business/doacaoBusiness";
 import { FilterUtilsDoacao } from '../utils/filterUtilsDoacao'; 
+import { ErrorUtils } from '../utils/ErrorUtils';
+import { ApiResponse } from '../types/ApiResponse';
+import { Doacao } from '../types/doacao';
 
 export class DoacaoController {
     private doacaoBusiness = new DoacaoBusiness();
@@ -38,4 +41,38 @@ export class DoacaoController {
             res.status(500).send({ error: error.message });
         }
     }
+    public create = async (req: Request, res: Response) => {
+        const errorUtils = new ErrorUtils();
+
+        try {
+            const { tipo, ong_id, usuario_id, valor, descricao } = req.body;
+
+            if (!tipo) errorUtils.addError('O tipo da doação é obrigatório.');
+            if (!ong_id || isNaN(Number(ong_id))) errorUtils.addError('O ID da ONG (ong_id) é obrigatório e deve ser um número.');
+            
+            if (!valor && !descricao) errorUtils.addError('O valor (para doação financeira) ou a descrição (para doação material) é obrigatório.');
+
+            errorUtils.throwIfHasErrors("Dados de criação inválidos");
+            const newDoacao = await this.doacaoBusiness.createDoacao({
+                tipo,
+                ong_id: Number(ong_id),
+                usuario_id: usuario_id ? Number(usuario_id) : undefined, 
+                valor: valor ? Number(valor) : 0,
+                descricao: descricao || ""
+            });
+
+            const response: ApiResponse<Doacao> = {
+                success: true,
+                message: "Doação registrada com sucesso!",
+                data: newDoacao,
+            };
+
+            res.status(201).send(response);
+        } catch (error: any) {
+            if (error.message.includes("obrigatórios") || error.message.includes("Dados de criação inválidos")) {
+                 return res.status(400).send({ success: false, message: "Erro de validação", errors: [error.message] });
+            }
+            res.status(500).send({ success: false, message: 'Erro interno do servidor', errors: [error.message] });
+        }
+    };
 }
