@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { OngBusiness } from "../business/ongBusiness";
-import { FilterUtilsOng } from '../utils/filterUtilsOng'; 
+import { FilterUtilsOng } from "../utils/filterUtilsOng";
 
 export class OngController {
     private ongBusiness = new OngBusiness();
@@ -8,36 +8,181 @@ export class OngController {
     public getAll = async (req: Request, res: Response) => {
         try {
             const filter = FilterUtilsOng.parseOngFilter(req.query);
+
             
-            //  Chama a Business
             const ongs = await this.ongBusiness.getAllOngs(filter);
-            
+
             res.status(200).send(ongs);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
         }
-    }
+    };
 
-    //  /ongs/:id Busca por ID
+    
     public getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
 
             if (!id || isNaN(Number(id))) {
-                return res.status(400).json({ error: 'ID da ONG é obrigatório e deve ser um número' });
+                return res.status(400).json({
+                    error: "ID da ONG é obrigatório e deve ser um número",
+                });
             }
 
             const idNumber = Number(id);
-
             const ong = await this.ongBusiness.getOngById(idNumber);
 
             if (!ong) {
-                return res.status(404).json({ error: 'ONG não encontrada' });
+                return res.status(404).json({ error: "ONG não encontrada" });
             }
 
-            res.status(200).send(ong); 
+            res.status(200).send(ong);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
         }
-    }
+    };
+
+    public create = async (req: Request, res: Response) => {
+        const errorUtils = new ErrorUtils();
+
+        try {
+            const { nome, email, endereco, telefone, usuario_id } = req.body;
+
+            if (!nome) errorUtils.addError("O nome da ONG é obrigatório.");
+            if (!email) errorUtils.addError("O email da ONG é obrigatório.");
+            if (!endereco) errorUtils.addError("O endereço é obrigatório.");
+            if (!usuario_id || isNaN(Number(usuario_id))) {
+                errorUtils.addError(
+                    "O ID do Admin (usuario_id) é obrigatório e deve ser um número."
+                );
+            }
+
+            errorUtils.throwIfHasErrors("Dados de criação inválidos");
+
+            const newOng = await this.ongBusiness.createOng({
+                nome,
+                email,
+                endereco,
+                telefone,
+                usuario_id: Number(usuario_id),
+            });
+
+            const response: ApiResponse<Ong> = {
+                success: true,
+                message: "ONG cadastrada com sucesso!",
+                data: newOng,
+            };
+
+            res.status(201).send(response);
+        } catch (error: any) {
+            if (error.message.includes("já registrado")) {
+                return res.status(409).send({
+                    success: false,
+                    message: error.message,
+                    errors: [error.message],
+                });
+            }
+
+            res.status(500).send({
+                success: false,
+                message: "Erro interno do servidor",
+                errors: [error.message],
+            });
+        }
+    };
+
+    
+    public update = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+
+            if (!id || isNaN(Number(id))) {
+                return res.status(400).json({
+                    error: "ID da ONG é obrigatório e deve ser um número",
+                });
+            }
+
+            const idNumber = Number(id);
+            const { nome, email, endereco, telefone, usuario_id } = req.body;
+
+            
+            if (!nome || !email || !endereco || !usuario_id) {
+                return res.status(400).json({
+                    error: "Todos os campos são obrigatórios para atualização",
+                });
+            }
+
+            await this.ongBusiness.updateOng(idNumber, {
+                nome,
+                email,
+                endereco,
+                telefone,
+                usuario_id,
+            });
+
+            const updatedOng = await this.ongBusiness.getOngById(idNumber);
+
+            const response: ApiResponse<Ong> = {
+                success: true,
+                message: "ONG atualizada com sucesso!",
+                data: updatedOng,
+            };
+
+            res.status(200).send(response);
+        } catch (error: any) {
+            if (error.message.includes("não encontrada")) {
+                return res.status(404).send({
+                    success: false,
+                    message: error.message,
+                    errors: [error.message],
+                });
+            }
+
+            if (error.message.includes("já registrado")) {
+                return res.status(409).send({
+                    success: false,
+                    message: error.message,
+                    errors: [error.message],
+                });
+            }
+
+            res.status(500).send({
+                success: false,
+                message: "Erro interno do servidor",
+                errors: [error.message],
+            });
+        }
+    };
+
+    
+    public delete = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+
+            if (!id || isNaN(Number(id))) {
+                return res.status(400).json({
+                    error: "ID da ONG é obrigatório e deve ser um número",
+                });
+            }
+
+            const idNumber = Number(id);
+            await this.ongBusiness.deleteOng(idNumber);
+
+            res.status(204).send();
+        } catch (error: any) {
+            if (error.message.includes("não encontrada")) {
+                return res.status(404).send({
+                    success: false,
+                    message: error.message,
+                    errors: [error.message],
+                });
+            }
+
+            res.status(500).send({
+                success: false,
+                message: "Erro interno do servidor",
+                errors: [error.message],
+            });
+        }
+    };
 }
