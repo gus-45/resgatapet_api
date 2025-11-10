@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { AdocaoBusiness } from "../business/adocaoBusiness";
-import { FilterUtilsAdocao } from '../utils/FilterUtilsAdocao'; 
+import { FilterUtilsAdocao } from '../utils/filterUtilsAdocao'; 
+import { ErrorUtils } from '../utils/ErrorUtils';
+import { ApiResponse } from '../types/ApiResponse';
 
 export class AdocaoController {
     private adocaoBusiness = new AdocaoBusiness();
@@ -54,6 +56,58 @@ export class AdocaoController {
             res.status(201).send({ message: "Solicitação de adoção registrada com sucesso!" });
         } catch (error: any) {
             res.status(400).send({ error: error.message });
+        }
+    };
+    public updateStatus = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+            const { status } = req.body;
+            const errorUtils = new ErrorUtils();
+
+            if (!id || isNaN(Number(id))) {
+                return res.status(400).json({ error: 'ID da adoção é obrigatório e deve ser um número' });
+            }
+            if (!status) errorUtils.addError('O novo status é obrigatório.');
+            errorUtils.throwIfHasErrors("Dados de atualização inválidos"); 
+
+            const idNumber = Number(id);
+            
+            await this.adocaoBusiness.updateAdocaoStatus(idNumber, status);
+
+            const response: ApiResponse<null> = {
+                success: true,
+                message: 'Status da solicitação de adoção atualizado com sucesso!'
+            };
+            res.status(200).send(response);
+
+        } catch (error: any) {
+            if (error.message.includes("não encontrada")) {
+                return res.status(404).send({ success: false, message: error.message, errors: [error.message] });
+            }
+            if (error.message.includes("inválido") || error.message.includes("Dados de atualização inválidos")) {
+                return res.status(400).send({ success: false, message: error.message, errors: [error.message] });
+            }
+            res.status(500).send({ success: false, message: 'Erro interno do servidor', errors: [error.message] });
+        }
+    };
+
+    public delete = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+
+            if (!id || isNaN(Number(id))) {
+                return res.status(400).json({ error: 'ID da adoção é obrigatório e deve ser um número' });
+            }
+
+            const idNumber = Number(id);
+            await this.adocaoBusiness.deleteAdocao(idNumber);
+
+            res.status(204).send(); 
+        } catch (error: any) {
+            if (error.message.includes("não encontrada")) {
+                return res.status(404).send({ success: false, message: error.message, errors: [error.message] });
+            }
+            res.status(500).send({ success: false, message: 'Erro interno do servidor', errors: [error.message] });
         }
     };
 }
