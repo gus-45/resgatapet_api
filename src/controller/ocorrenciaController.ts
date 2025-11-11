@@ -1,4 +1,3 @@
-// src/controller/ocorrenciaController.ts
 import { Request, Response } from "express";
 import { OcorrenciaBusiness } from "../business/ocorrenciaBusiness";
 import { FilterUtilsOcorrencia } from '../utils/filterUtilsOcorrencia'; 
@@ -46,7 +45,7 @@ export class OcorrenciaController {
                 descricao, 
                 localizacao, 
                 foto_url, 
-                usuario_id: usuario_id || 0 
+                usuario_id: Number(usuario_id)
             });
             res.status(201).send({ message: "Ocorrência registrada com sucesso! A comunidade e ONGs serão notificadas." });
         } catch (error: any) {

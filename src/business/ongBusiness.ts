@@ -44,11 +44,15 @@ export class OngBusiness {
         }
     }
 
-    public async updateOng(id_ong: number, input: Omit<Ong, "id_ong">): Promise<void> {
+    public async updateOng(id_ong: number, input: Omit<Ong, "id_ong">,  authenticatedUserId?: number): Promise<void> {
         try {
             const ong = await this.ongData.getOngById(id_ong);
             if (!ong) {
                 throw new Error("ONG nao encontrada.");
+            }
+
+            if (authenticatedUserId && ong.usuario_id !== authenticatedUserId) {
+                throw new Error("Você não tem permissão para atualizar esta ONG. Apenas o Administrador do sistema ou o Admin vinculado (usuario_id: ${ong.usuario_id}) pode fazer isso.");
             }
 
             const existingOng = await this.ongData.getOngByEmail(input.email);

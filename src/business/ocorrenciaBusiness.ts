@@ -41,6 +41,8 @@ export class OcorrenciaBusiness {
                 ...input,
                 status: statusInicial,
                 data_registro: dataRegistro,
+                ong_id: undefined, 
+                animal_id: undefined
             } as Omit<Ocorrencia, "id_ocorrencia">;
 
             await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB);

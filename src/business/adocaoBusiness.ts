@@ -3,9 +3,13 @@ import { Adocao } from "../types/adocao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { AdocaoFilterDTO } from "../dto/adocaoFilterDto";
 import { FilterUtilsAdocao } from "../utils/filterUtilsAdocao";
+import { AnimalData } from "../data/animalData";
+import { UserData } from "../data/usuarioData";
 
 export class AdocaoBusiness {
   private adocaoData = new AdocaoData();
+  private animalData = new AnimalData();
+  private userData = new UserData();
 
   public async getAllAdocoes(
     filter: AdocaoFilterDTO
@@ -28,9 +32,7 @@ export class AdocaoBusiness {
     }
   }
 
-  public async createAdocao(
-    input: Omit<Adocao, "id_adocao">
-  ): Promise<void> {
+  public async createAdocao(input: Omit<Adocao, "id_adocao">): Promise<void> {
     try {
       if (!input.animal_id || !input.usuario_id || !input.status) {
         throw new Error(
@@ -38,7 +40,21 @@ export class AdocaoBusiness {
         );
       }
 
+      const animalExiste = await this.animalData.getAnimalById(input.animal_id);
+      if (!animalExiste) {
+        throw new Error(`Animal com ID ${input.animal_id} não encontrado.`);
+      }
+
+      const usuarioExiste = await this.userData.getUserById(input.usuario_id);
+      if (!usuarioExiste || usuarioExiste.tipo.toUpperCase() !== "COMUM") {
+        throw new Error(
+          `Usuário com ID ${input.usuario_id} não encontrado ou não é um Usuário Comum.`
+        );
+      }
+
       input.data_solicitacao = new Date();
+      input.ong_id = animalExiste.ong_id;
+
       await this.adocaoData.createAdocao(input);
     } catch (error: any) {
       throw new Error(error.message);

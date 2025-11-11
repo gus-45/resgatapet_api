@@ -106,6 +106,7 @@ export class OngController {
             }
 
             const idNumber = Number(id);
+            const authenticatedUserId = req.user?.userId;
             const { nome, email, endereco, telefone, usuario_id } = req.body;
 
             
@@ -121,7 +122,7 @@ export class OngController {
                 endereco,
                 telefone,
                 usuario_id,
-            });
+            }, authenticatedUserId);
 
             const updatedOng = await this.ongBusiness.getOngById(idNumber);
 
