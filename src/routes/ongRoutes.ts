@@ -2,6 +2,7 @@ import express from 'express'
 import { OngController } from '../controller/ongController';
 import { AuthMiddleware } from '../middlewares/authMiddleware';
 import { AuthorizationMiddleware } from '../middlewares/authorizationMiddleware';
+import { doacaoRouter } from './doacaoRoutes';
 
 export const ongRouter = express.Router();
 
@@ -21,3 +22,6 @@ ongRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.autho
 
 // Remove uma ONG (apenas Admin)
 ongRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), ongController.delete);
+
+//  router de Doações como sub-recurso: /ongs/:id/doacoes
+ongRouter.use('/:id/doacoes', doacaoRouter);

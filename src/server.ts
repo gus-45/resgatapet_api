@@ -13,5 +13,4 @@ app.use('/animais', animalRouter);
 app.use('/ongs', ongRouter);
 app.use('/adocoes', adocaoRouter);
 app.use('/prioridades', prioridadeRouter);
-app.use('/doacoes', doacaoRouter);
 app.use('/ocorrencias', ocorrenciaRouter);

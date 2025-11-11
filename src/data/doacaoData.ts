@@ -3,6 +3,17 @@ import { Doacao } from "../types/doacao";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { DoacaoFilterDTO } from "../dto/doacaoFilterDto";
 
+
+//input sem o id_doacao 
+type DoacaoInputForDB = {
+    tipo: string;
+    data_doacao: Date; 
+    usuario_id?: number; // pode ser nulo, caso a pessoa que doe não se identifique
+    ong_id: number;
+    valor?: number;
+    descricao?: string;
+};
+
 export class DoacaoData {
 
     public async getAllDoacoes(filter: Required<DoacaoFilterDTO>): Promise<PaginatedResponse<Doacao>> { 
@@ -52,6 +63,15 @@ export class DoacaoData {
         try {
             const doacao = await connection('doacao').where({ id_doacao }).first();
             return doacao as Doacao | undefined;
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    public async createDoacao(doacao: DoacaoInputForDB): Promise<number> {
+        try {
+            const [id_doacao] = await connection('doacao').insert(doacao);
+            return id_doacao;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }

@@ -41,7 +41,7 @@ export class OcorrenciaBusiness {
                 ...input,
                 status: statusInicial,
                 data_registro: dataRegistro,
-                ong_id: undefined, 
+                ong_id: undefined,
                 animal_id: undefined
             } as Omit<Ocorrencia, "id_ocorrencia">;
 
@@ -51,7 +51,7 @@ export class OcorrenciaBusiness {
         }
     }
 
-    public async updateOcorrenciaStatus(id_ocorrencia: number, status: string): Promise<void> {
+    public async updateOcorrenciaStatus(id_ocorrencia: number, status: string, ong_id?: number): Promise<void> {
         try {
             const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
             if (!ocorrencia) {
@@ -63,7 +63,7 @@ export class OcorrenciaBusiness {
                 throw new Error("Status de ocorrência inválido.");
             }
 
-            await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+            await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status, ong_id);
         } catch (error: any) {
             throw new Error(error.message);
         }

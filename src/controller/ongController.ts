@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { OngBusiness } from "../business/ongBusiness";
 import { FilterUtilsOng } from "../utils/filterUtilsOng";
-import { ErrorUtils } from "../utils/ErrorUtils"; 
-import { ApiResponse } from "../types/ApiResponse"; 
+import { ErrorUtils } from "../utils/ErrorUtils";
+import { ApiResponse } from "../types/ApiResponse";
 import { Ong } from "../types/ong";
 
 export class OngController {
@@ -12,7 +12,7 @@ export class OngController {
         try {
             const filter = FilterUtilsOng.parseOngFilter(req.query);
 
-            
+
             const ongs = await this.ongBusiness.getAllOngs(filter);
 
             res.status(200).send(ongs);
@@ -21,7 +21,7 @@ export class OngController {
         }
     };
 
-    
+
     public getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
@@ -78,6 +78,15 @@ export class OngController {
 
             res.status(201).send(response);
         } catch (error: any) {
+
+            if (error.message.includes("Dados de criação inválidos")) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Erro de validação",
+                    errors: error.message.split(": ")[1].split("|").filter((e: string) => e.trim().length > 0)  // split divide a mensagem 
+                });
+            }
+
             if (error.message.includes("já registrado")) {
                 return res.status(409).send({
                     success: false,
@@ -94,7 +103,7 @@ export class OngController {
         }
     };
 
-    
+
     public update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
@@ -109,7 +118,7 @@ export class OngController {
             const authenticatedUserId = req.user?.userId;
             const { nome, email, endereco, telefone, usuario_id } = req.body;
 
-            
+
             if (!nome || !email || !endereco || !usuario_id) {
                 return res.status(400).json({
                     error: "Todos os campos são obrigatórios para atualização",
@@ -158,7 +167,7 @@ export class OngController {
         }
     };
 
-    
+
     public delete = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;

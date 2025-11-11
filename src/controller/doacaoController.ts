@@ -10,7 +10,16 @@ export class DoacaoController {
 
     public getAll = async (req: Request, res: Response) => {
         try {
-            const filter = FilterUtilsDoacao.parseDoacaoFilter(req.query);
+            // Prioriza o ong_id do params sobre o do query
+            const ongIdFromParams = req.params.id ? Number(req.params.id) : undefined;
+            
+            //garanti que o ong_id do params sobrescreva o do query
+            const rawFilter = { 
+                ...req.query,
+                ong_id: ongIdFromParams || req.query.ong_id, // Se veio do params, usa ele.
+            };
+
+            const filter = FilterUtilsDoacao.parseDoacaoFilter(rawFilter);
             
             const doacoes = await this.doacaoBusiness.getAllDoacoes(filter);
             
@@ -41,21 +50,32 @@ export class DoacaoController {
             res.status(500).send({ error: error.message });
         }
     }
+
     public create = async (req: Request, res: Response) => {
         const errorUtils = new ErrorUtils();
 
         try {
-            const { tipo, ong_id, usuario_id, valor, descricao } = req.body;
+            // ID da ONG vem no parametro se for /ongs/:id/doacoes
+            const ongIdFromParams = req.params.id ? Number(req.params.id) : undefined;
+            
+            // ID da ONG pode vir do body ou params mas vai manter o do params.
+            const ong_id = ongIdFromParams || req.body.ong_id; 
+            
+            const { tipo, usuario_id, valor, descricao } = req.body;
 
             if (!tipo) errorUtils.addError('O tipo da doação é obrigatório.');
-            if (!ong_id || isNaN(Number(ong_id))) errorUtils.addError('O ID da ONG (ong_id) é obrigatório e deve ser um número.');
+            
+            if (!ong_id || isNaN(Number(ong_id))) {
+                errorUtils.addError('O ID da ONG (ong_id) é obrigatório e deve ser um número.');
+            }
             
             if (!valor && !descricao) errorUtils.addError('O valor (para doação financeira) ou a descrição (para doação material) é obrigatório.');
 
             errorUtils.throwIfHasErrors("Dados de criação inválidos");
+            
             const newDoacao = await this.doacaoBusiness.createDoacao({
                 tipo,
-                ong_id: Number(ong_id),
+                ong_id: Number(ong_id), 
                 usuario_id: usuario_id ? Number(usuario_id) : undefined, 
                 valor: valor ? Number(valor) : 0,
                 descricao: descricao || ""

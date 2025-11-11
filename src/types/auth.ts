@@ -15,3 +15,15 @@ declare global {
         }
     }
 }
+
+
+export interface AuthUserResponse {
+    id_usuario?: number; 
+    id_ong?: number; 
+    id?: number; 
+    nome: string;
+    email: string;
+    senha: string;
+    tipo: 'COMUM' | 'ONG' | 'ADMIN' | 'usuario'; // 'usuario' vem do Data
+}
+

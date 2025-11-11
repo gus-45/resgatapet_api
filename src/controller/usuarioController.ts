@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UserBusiness } from "../business/usuarioBusiness";
 import { FilterUtilsUsuario } from "../utils/filterUtilsUsuario";
 import { ErrorUtils } from "../utils/ErrorUtils";
-import { ApiResponse } from "../types/ApiResponse"; 
+import { ApiResponse } from "../types/ApiResponse";
 import { User } from "../types/usuario";
 
 export class UserController {
@@ -47,7 +47,7 @@ export class UserController {
         try {
             const { nome, email, senha, tipo } = req.body;
 
-          
+
             if (!nome) errorUtils.addError("O nome do usuário é obrigatório.");
             if (!email) errorUtils.addError("O email é obrigatório.");
             if (!senha) errorUtils.addError("A senha é obrigatória.");
@@ -57,7 +57,7 @@ export class UserController {
 
             errorUtils.throwIfHasErrors("Dados de criação inválidos");
 
-            
+
             const newUser = await this.userBusiness.createUser({
                 nome,
                 email,
@@ -65,7 +65,7 @@ export class UserController {
                 tipo: tipo.toUpperCase(),
             });
 
-       
+
             const response: ApiResponse<User> = {
                 success: true,
                 message: "Usuário cadastrado com sucesso!",
@@ -74,7 +74,7 @@ export class UserController {
 
             res.status(201).send(response);
         } catch (error: any) {
-       
+
             if (error.message.includes("já cadastrado")) {
                 return res.status(409).send({
                     success: false,
@@ -87,7 +87,7 @@ export class UserController {
                 return res.status(400).send({
                     success: false,
                     message: "Erro de validação",
-                    errors: error.message.split(": ")[1].split("|"),
+                    errors: error.message.split(": ")[1].split("|").filter((e: string) => e.trim().length > 0),
                 });
             }
 
@@ -104,7 +104,7 @@ export class UserController {
         try {
             const id = req.params.id;
 
-           
+
             if (!id || isNaN(Number(id))) {
                 return res.status(400).json({
                     error: "ID do usuário é obrigatório e deve ser um número",
@@ -114,7 +114,7 @@ export class UserController {
             const idNumber = Number(id);
             const { nome, email, senha, tipo } = req.body;
 
-        
+
             if (!nome || !email || !senha || !tipo) {
                 return res.status(400).json({
                     error: "Todos os campos são obrigatórios para atualização",
@@ -162,7 +162,7 @@ export class UserController {
         }
     };
 
-   
+
     public delete = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;

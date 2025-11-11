@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { OcorrenciaBusiness } from "../business/ocorrenciaBusiness";
-import { FilterUtilsOcorrencia } from '../utils/filterUtilsOcorrencia'; 
+import { FilterUtilsOcorrencia } from '../utils/filterUtilsOcorrencia';
 import { ErrorUtils } from '../utils/ErrorUtils';
 import { ApiResponse } from '../types/ApiResponse';
 import { Ocorrencia } from '../types/ocorrencia';
@@ -28,23 +28,23 @@ export class OcorrenciaController {
             if (!ocorrencia) {
                 return res.status(404).json({ error: 'Ocorrência não encontrada' });
             }
-            res.status(200).send(ocorrencia); 
+            res.status(200).send(ocorrencia);
         } catch (error: any) {
             res.status(500).send({ error: error.message });
         }
     }
     public create = async (req: Request, res: Response) => {
         try {
-            const { 
-                descricao, 
-                localizacao, 
-                foto_url, 
-                usuario_id 
+            const {
+                descricao,
+                localizacao,
+                foto_url,
+                usuario_id
             } = req.body;
             await this.ocorrenciaBusiness.createOcorrencia({
-                descricao, 
-                localizacao, 
-                foto_url, 
+                descricao,
+                localizacao,
+                foto_url,
                 usuario_id: Number(usuario_id)
             });
             res.status(201).send({ message: "Ocorrência registrada com sucesso! A comunidade e ONGs serão notificadas." });
@@ -58,18 +58,17 @@ export class OcorrenciaController {
     public updateStatus = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const { status, ong_id } = req.body; 
+            const { status, ong_id } = req.body;
             const errorUtils = new ErrorUtils();
 
             if (!id || isNaN(Number(id))) {
                 return res.status(400).json({ error: 'ID da ocorrência é obrigatório e deve ser um número' });
             }
             if (!status) errorUtils.addError('O novo status é obrigatório.');
-            errorUtils.throwIfHasErrors("Dados de atualização inválidos"); 
-
+            errorUtils.throwIfHasErrors("Dados de atualização inválidos");
             const idNumber = Number(id);
             const ongIdNumber = ong_id ? Number(ong_id) : undefined;
-            
+
             await this.ocorrenciaBusiness.updateOcorrenciaStatus(idNumber, status, ongIdNumber);
             const response: ApiResponse<null> = {
                 success: true,
@@ -98,7 +97,7 @@ export class OcorrenciaController {
             const idNumber = Number(id);
             await this.ocorrenciaBusiness.deleteOcorrencia(idNumber);
 
-            res.status(204).send(); 
+            res.status(204).send();
         } catch (error: any) {
             if (error.message.includes("não encontrada")) {
                 return res.status(404).send({ success: false, message: error.message, errors: [error.message] });

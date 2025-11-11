@@ -1,7 +1,8 @@
 import connection from "../dbConnection";
+import { AuthUserResponse } from "../types/auth";
 
 export class AuthData {
-    async getUserByEmail(email: string): Promise<any | null> {
+    async getUserByEmail(email: string): Promise<AuthUserResponse | null> {
         try {
             let user = await connection('Usuario').where({ email }).first();
             

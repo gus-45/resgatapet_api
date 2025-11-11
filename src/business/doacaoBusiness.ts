@@ -4,6 +4,15 @@ import { PaginatedResponse } from "../dto/paginationDto";
 import { DoacaoFilterDTO } from "../dto/doacaoFilterDto";
 import { FilterUtilsDoacao } from "../utils/filterUtilsDoacao";
 
+//tipo de input esperado do controller, sem o id_doacao e data_doacao
+type DoacaoInputFromController = {
+    tipo: string;
+    usuario_id?: number;
+    ong_id: number;
+    valor?: number;
+    descricao?: string;
+};
+
 export class DoacaoBusiness {
     private doacaoData = new DoacaoData();
 
@@ -25,4 +34,30 @@ export class DoacaoBusiness {
             throw new Error(error.message);
         }
     }
+
+    public async createDoacao(input: DoacaoInputFromController): Promise<Doacao> {
+        try {
+            const dataDoacao = new Date();
+
+            const doacaoParaDB = {
+                tipo: input.tipo,
+                ong_id: input.ong_id,
+                usuario_id: input.usuario_id,
+                valor: input.valor,
+                descricao: input.descricao,
+                data_doacao: dataDoacao,
+            };
+
+            const doacaoId = await this.doacaoData.createDoacao(doacaoParaDB as any);
+
+            return {
+                id_doacao: doacaoId,
+                ...doacaoParaDB
+            } as Doacao;
+
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
 }
