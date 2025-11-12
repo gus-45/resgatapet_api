@@ -2,6 +2,7 @@ import connection from "../dbConnection";
 import { Ong } from "../types/ong";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OngFilterDTO } from "../dto/ongFilterDto";
+import { OngInputDTO, OngUpdateDTO } from "../dto/ongDto";
 
 // atributos necessários para criar uma ONG no banco sem o id_ong
 type OngInputForDB = {
@@ -75,7 +76,7 @@ export class OngData {
         }
     }
 
-    public async createOng(ong: OngInputForDB): Promise<number> {
+    public async createOng(ong: OngInputDTO): Promise<number> {
         try {
             const [id_ong] = await connection('ONG').insert(ong);
             return id_ong;
@@ -84,7 +85,7 @@ export class OngData {
         }
     }
 
-    public async updateOng(id_ong: number, ong: OngInputForDB): Promise<void> {
+    public async updateOng(id_ong: number, ong: OngUpdateDTO): Promise<void> {
         try {
             await connection('ONG').where({ id_ong }).update(ong);
         } catch (error: any) {
@@ -95,6 +96,16 @@ export class OngData {
     public async deleteOng(id_ong: number): Promise<void> {
         try {
             await connection('ONG').where({ id_ong }).del();
+        } catch (error: any) {
+            throw new Error(error.sqlMessage || error.message);
+        }
+    }
+
+    //busca ONG pelo ID do Usuário (Admin da ONG)
+    public async getOngByUserId(usuario_id: number): Promise<Ong | undefined> {
+        try {
+            const ong = await connection('ONG').where({ usuario_id }).first();
+            return ong as Ong | undefined;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }

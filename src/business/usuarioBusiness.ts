@@ -4,6 +4,7 @@ import { PaginatedResponse } from "../dto/paginationDto";
 import { UserFilterDTO } from "../dto/userFilterDto";
 import { FilterUtilsUsuario } from "../utils/filterUtilsUsuario";
 import { AuthUtils } from '../utils/authUtils';
+import { UsuarioCreateDTO, UsuarioUpdateDTO } from "../dto/usuarioDto";
 
 export class UserBusiness {
     private userData = new UserData();
@@ -27,7 +28,7 @@ export class UserBusiness {
         }
     }
 
-    public async createUser(input: Omit<User, "id_usuario" | "data_criacao">): Promise<User> {
+    public async createUser(input: UsuarioCreateDTO): Promise<User> {
         try {
             if (!input.nome || !input.email || !input.senha || !input.tipo) {
                 throw new Error("Campos obrigatórios ausentes: nome, email, senha e tipo.");
@@ -40,20 +41,20 @@ export class UserBusiness {
 
             const hashedPassword = await AuthUtils.hashPassword(input.senha);
 
-            const newUser: Omit<User, "id_usuario"> = {
+            const newUserParaDB = {
                 ...input,
                 senha: hashedPassword,
                 data_criacao: new Date(),
             };
 
-            const userId = await this.userData.createUser(newUser);
-            return { ...newUser, id_usuario: userId };
+            const userId = await this.userData.createUser(newUserParaDB);
+            return { ...newUserParaDB, id_usuario: userId };
         } catch (error: any) {
             throw new Error(error.message);
         }
     }
 
-    public async updateUser(id_usuario: number, input: Omit<User, "id_usuario" | "data_criacao">): Promise<void> {
+    public async updateUser(id_usuario: number, input: UsuarioUpdateDTO): Promise<void> {
         try {
             const userToUpdate = await this.userData.getUserById(id_usuario);
             if (!userToUpdate) {
@@ -65,16 +66,23 @@ export class UserBusiness {
                 throw new Error("Email já cadastrado por outro usuário.");
             }
 
-            const hashedPassword = await AuthUtils.hashPassword(input.senha);
+            let hashedPassword = userToUpdate.senha; 
 
-            const updatedUser: User = {
+            // verifica se a senha nova é a mesma que a hash antiga, se não for, faz o hash da nova senha 
+            const isSamePassword = await AuthUtils.comparePassword(input.senha, userToUpdate.senha);
+            
+            if (!isSamePassword) {
+                // Se a senha for diferente, fazemos o novo hash
+                hashedPassword = await AuthUtils.hashPassword(input.senha);
+            }
+
+            const updatedUser: UsuarioUpdateDTO = {
                 ...input,
-                id_usuario,
-                senha: hashedPassword,
-                data_criacao: userToUpdate.data_criacao, 
+                senha: hashedPassword, // Usa a senha hash
             };
 
             await this.userData.updateUser(id_usuario, updatedUser);
+
         } catch (error: any) {
             throw new Error(error.message);
         }

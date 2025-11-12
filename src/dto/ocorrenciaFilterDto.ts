@@ -8,3 +8,14 @@ export interface OcorrenciaFilterDTO extends PaginationParams {
     sortBy?: 'id_ocorrencia' | 'data_registro' | 'status' | 'localizacao'; 
     sortOrder?: 'asc' | 'desc'; 
 }
+
+export interface OcorrenciaInputDTO{
+    descricao: string;
+    localizacao: string;
+    foto_url: string;
+    usuario_id?: number; 
+}
+
+export interface OcorrenciaUpdateStatusDTO {
+    status: string;
+}

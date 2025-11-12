@@ -2,7 +2,14 @@
 import connection from "../dbConnection";
 import { Ocorrencia } from "../types/ocorrencia";
 import { PaginatedResponse } from "../dto/paginationDto";
-import { OcorrenciaFilterDTO } from "../dto/ocorrenciaFilterDto";
+import { OcorrenciaFilterDTO, OcorrenciaInputDTO } from "../dto/ocorrenciaFilterDto";
+
+type OcorrenciaParaBanco = OcorrenciaInputDTO & {
+    status: string;
+    data_registro: Date;
+    ong_id?: number | null; // ONG e Animal são opcionais
+    animal_id?: number | null;
+}
 
 export class OcorrenciaData {
 
@@ -59,7 +66,7 @@ export class OcorrenciaData {
         }
     }
 
-    public async createOcorrencia(ocorrencia: Omit<Ocorrencia, "id_ocorrencia" | "data_registro">): Promise<void> {
+    public async createOcorrencia(ocorrencia: OcorrenciaParaBanco): Promise<void> {
         try {
             await connection("Ocorrencia").insert(ocorrencia);
         } catch (error: any) {
@@ -69,12 +76,14 @@ export class OcorrenciaData {
 
     public async updateOcorrenciaStatus(id_ocorrencia: number, status: string, ong_id?: number): Promise<void> {
         try {
-            const updateData: { status: string, ong_id?: number } = { status };
-            // Se a ONG está resgatando, associamos a ONG_ID (FK) 
-            if (ong_id) {
+            const updateData: { status: string, ong_id?: number | null } = { status };
+            
+            // Se o status for 'em andamento', associa a ONG_ID
+            if (status === 'em andamento' && ong_id) {
                 updateData.ong_id = ong_id;
-            }
+            } 
 
+            // Se a ocorrência for resolvida/cancelada, a FK da ONG pode ser mantida ou removida (manter é mais comum para histórico)
             await connection('Ocorrencia').where({ id_ocorrencia }).update(updateData);
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);

@@ -4,6 +4,7 @@ import { FilterUtilsOng } from "../utils/filterUtilsOng";
 import { ErrorUtils } from "../utils/ErrorUtils";
 import { ApiResponse } from "../types/ApiResponse";
 import { Ong } from "../types/ong";
+import { OngUpdateDTO } from "../dto/ongDto";
 
 export class OngController {
     private ongBusiness = new OngBusiness();
@@ -116,6 +117,7 @@ export class OngController {
 
             const idNumber = Number(id);
             const authenticatedUserId = req.user?.userId;
+            const authenticatedUserType = req.user?.tipo.toUpperCase(); //  Pega o tipo de usuário
             const { nome, email, endereco, telefone, usuario_id } = req.body;
 
 
@@ -126,14 +128,15 @@ export class OngController {
                 errorUtils.addError("O ID do Admin (usuario_id) é obrigatório e deve ser um número.");
             }
             errorUtils.throwIfHasErrors("Dados de atualização inválidos");
+            
+            const updateInput: OngUpdateDTO = { nome, email, endereco, telefone, usuario_id: Number(usuario_id) }; 
 
-            await this.ongBusiness.updateOng(idNumber, {
-                nome,
-                email,
-                endereco,
-                telefone,
-                usuario_id,
-            }, authenticatedUserId);
+            await this.ongBusiness.updateOng(
+                idNumber, 
+                updateInput, 
+                authenticatedUserId, 
+                authenticatedUserType // envia tipo de usuário para o Business
+            );
 
             const updatedOng = await this.ongBusiness.getOngById(idNumber);
 

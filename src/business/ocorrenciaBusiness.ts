@@ -1,11 +1,16 @@
 import { OcorrenciaData } from "../data/ocorrenciaData";
 import { Ocorrencia } from "../types/ocorrencia";
 import { PaginatedResponse } from "../dto/paginationDto";
-import { OcorrenciaFilterDTO } from "../dto/ocorrenciaFilterDto";
+import { OcorrenciaFilterDTO, OcorrenciaInputDTO, OcorrenciaUpdateStatusDTO } from "../dto/ocorrenciaFilterDto";
 import { FilterUtilsOcorrencia } from "../utils/filterUtilsOcorrencia";
+import { UserData } from "../data/usuarioData"; 
+import { OngData } from "../data/ongData"; 
+
 
 export class OcorrenciaBusiness {
     private ocorrenciaData = new OcorrenciaData();
+    private userData = new UserData(); 
+    private ongData = new OngData(); 
 
     public async getAllOcorrencias(filter: OcorrenciaFilterDTO): Promise<PaginatedResponse<Ocorrencia>> {
         try {
@@ -26,32 +31,39 @@ export class OcorrenciaBusiness {
         }
     }
 
-    public async createOcorrencia(
-        input: Omit<Ocorrencia, "id_ocorrencia" | "data_registro" | "status">
-    ): Promise<void> {
+    public async createOcorrencia(input: OcorrenciaInputDTO): Promise<void> {
         try {
             if (!input.descricao || !input.localizacao || !input.foto_url) {
                 throw new Error("Campos obrigatórios ausentes: descricao, localizacao e foto_url.");
             }
 
-            const statusInicial = "encontrado";
-            const dataRegistro = new Date();
+            // Validação de Usuário Comum, se o ID for fornecido
+            if (input.usuario_id) {
+                const userExists = await this.userData.getUserById(input.usuario_id);
+                if (!userExists || userExists.tipo.toUpperCase() !== "COMUM") {
+                    throw new Error("Usuário ID inválido ou não é um Usuário Comum.");
+                }
+            }
 
+            const statusInicial = "encontrado";
+            
             const ocorrenciaParaDB = {
                 ...input,
+                usuario_id: input.usuario_id || undefined, 
                 status: statusInicial,
-                data_registro: dataRegistro,
+                data_registro: new Date(),
                 ong_id: undefined,
                 animal_id: undefined
-            } as Omit<Ocorrencia, "id_ocorrencia">;
+            };
 
-            await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB);
+            await this.ocorrenciaData.createOcorrencia(ocorrenciaParaDB as any);
         } catch (error: any) {
             throw new Error(error.message);
         }
     }
 
-    public async updateOcorrenciaStatus(id_ocorrencia: number, status: string, ong_id?: number): Promise<void> {
+    public async updateOcorrenciaStatus(id_ocorrencia: number, statusInput: OcorrenciaUpdateStatusDTO, userId?: number, userType?: string): Promise<void> {
+        const { status } = statusInput;
         try {
             const ocorrencia = await this.ocorrenciaData.getOcorrenciaById(id_ocorrencia);
             if (!ocorrencia) {
@@ -62,8 +74,28 @@ export class OcorrenciaBusiness {
             if (!statusPermitidos.includes(status)) {
                 throw new Error("Status de ocorrência inválido.");
             }
+            
+            let ong_id_para_associar: number | undefined;
+            
+            // ONG só pode colocar 'em andamento'
+            if (status === 'em andamento') {
+                if (userType === 'ONG') {
+                    const ong = await this.ongData.getOngByUserId(userId!);
+                    if (!ong) {
+                        throw new Error("Sua conta não está associada a nenhuma ONG cadastrada.");
+                    }
+                    ong_id_para_associar = ong.id_ong;
+                    await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status, ong_id_para_associar);
+                } else if (userType === 'ADMIN') {
+                     await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+                } else {
+                    throw new Error("Apenas uma conta ONG ou ADMIN pode alterar o status para 'em andamento'.");
+                }
+            } else if (status === 'resolvido' || status === 'cancelado' || status === 'encontrado') {
+                await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status);
+            }
 
-            await this.ocorrenciaData.updateOcorrenciaStatus(id_ocorrencia, status, ong_id);
+
         } catch (error: any) {
             throw new Error(error.message);
         }

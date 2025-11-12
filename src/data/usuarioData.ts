@@ -2,6 +2,7 @@ import connection from "../dbConnection";
 import { User } from "../types/usuario";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { UserFilterDTO } from "../dto/userFilterDto";
+import { UsuarioCreateDTO, UsuarioUpdateDTO } from "../dto/usuarioDto";
 
 // atributos necessários para criar um usuário no banco
 type UserInputForDB = {
@@ -11,6 +12,11 @@ type UserInputForDB = {
     tipo: string;
     data_criacao: Date;
 }
+
+type UsuarioInputParaBanco = UsuarioCreateDTO & {
+    data_criacao: Date;
+}
+
 export class UserData {
 
     public async getAllUsers(filter: Required<UserFilterDTO>): Promise<PaginatedResponse<User>> {
@@ -28,7 +34,8 @@ export class UserData {
 
             // ClonaPra pegar o TOTAL de itens
             const countQuery = query.clone();
-            const [{ total }] = await countQuery.count('* as total'); //
+            const [resultCount] = await countQuery.count('* as total');
+            const total = Number(resultCount.total);
 
             query = query.orderBy(sortBy, sortOrder);
 
@@ -74,7 +81,7 @@ export class UserData {
         }
     }
 
-    public async createUser(user: UserInputForDB): Promise<number> {
+    public async createUser(user: UsuarioInputParaBanco): Promise<number> {
         try {
             const [id_usuario] = await connection('Usuario').insert(user);
             return id_usuario;
@@ -83,7 +90,7 @@ export class UserData {
         }
     }
 
-    public async updateUser(id_usuario: number, user: UserInputForDB): Promise<void> {
+    public async updateUser(id_usuario: number, user: UsuarioUpdateDTO): Promise<void> {
         try {
             await connection('Usuario').where({ id_usuario }).update(user);
         } catch (error: any) {

@@ -3,6 +3,7 @@ import { Ong } from "../types/ong";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { OngFilterDTO } from "../dto/ongFilterDto";
 import { FilterUtilsOng } from "../utils/filterUtilsOng";
+import { OngInputDTO, OngUpdateDTO } from "../dto/ongDto";
 
 export class OngBusiness {
     private ongData = new OngData();
@@ -26,7 +27,7 @@ export class OngBusiness {
         }
     }
 
-    public async createOng(input: Omit<Ong, "id_ong">): Promise<Ong> {
+    public async createOng(input: OngInputDTO): Promise<Ong> {
         try {
             if (!input.nome || !input.email || !input.endereco || !input.usuario_id) {
                 throw new Error("Campos obrigatorios ausentes: nome, email, endereco, usuario_id.");
@@ -44,15 +45,15 @@ export class OngBusiness {
         }
     }
 
-    public async updateOng(id_ong: number, input: Omit<Ong, "id_ong">,  authenticatedUserId?: number): Promise<void> {
+    public async updateOng(id_ong: number, input: OngUpdateDTO, authenticatedUserId?: number, authenticatedUserType?: string): Promise<void> {
         try {
             const ong = await this.ongData.getOngById(id_ong);
             if (!ong) {
                 throw new Error("ONG nao encontrada.");
             }
 
-            if (authenticatedUserId && ong.usuario_id !== authenticatedUserId) {
-                throw new Error("Você não tem permissão para atualizar esta ONG. Apenas o Administrador do sistema ou o Admin vinculado (usuario_id: ${ong.usuario_id}) pode fazer isso.");
+           if (authenticatedUserType !== 'ADMIN' && ong.usuario_id !== authenticatedUserId) {
+                throw new Error(`Você não tem permissão para atualizar esta ONG. Apenas o Administrador do sistema ou o Admin vinculado (usuario_id: ${ong.usuario_id}) pode fazer isso.`);
             }
 
             const existingOng = await this.ongData.getOngByEmail(input.email);
