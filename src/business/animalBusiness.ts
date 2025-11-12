@@ -54,7 +54,7 @@ export class AnimalBusiness {
         throw new Error("Animal não encontrado.");
       }
 
-      await this.animalData.updateAnimal(id_animal, input as any);
+      await this.animalData.updateAnimal(id_animal, input);
     } catch (error: any) {
       throw new Error(error.message);
     }

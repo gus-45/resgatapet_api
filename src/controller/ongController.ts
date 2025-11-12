@@ -105,9 +105,9 @@ export class OngController {
 
 
     public update = async (req: Request, res: Response) => {
+        const errorUtils = new ErrorUtils();
         try {
             const id = req.params.id;
-
             if (!id || isNaN(Number(id))) {
                 return res.status(400).json({
                     error: "ID da ONG é obrigatório e deve ser um número",
@@ -119,11 +119,13 @@ export class OngController {
             const { nome, email, endereco, telefone, usuario_id } = req.body;
 
 
-            if (!nome || !email || !endereco || !usuario_id) {
-                return res.status(400).json({
-                    error: "Todos os campos são obrigatórios para atualização",
-                });
+            if (!nome) errorUtils.addError("O nome da ONG é obrigatório.");
+            if (!email) errorUtils.addError("O email da ONG é obrigatório.");
+            if (!endereco) errorUtils.addError("O endereço é obrigatório.");
+            if (!usuario_id || isNaN(Number(usuario_id))) {
+                errorUtils.addError("O ID do Admin (usuario_id) é obrigatório e deve ser um número.");
             }
+            errorUtils.throwIfHasErrors("Dados de atualização inválidos");
 
             await this.ongBusiness.updateOng(idNumber, {
                 nome,
@@ -156,6 +158,14 @@ export class OngController {
                     success: false,
                     message: error.message,
                     errors: [error.message],
+                });
+            }
+
+            if (error.message.includes("Dados de atualização inválidos")) { // <-- Novo tratamento de erro 400
+                return res.status(400).send({
+                    success: false,
+                    message: "Erro de validação",
+                    errors: error.message.split(": ")[1].split("|").filter((e: string) => e.trim().length > 0)
                 });
             }
 
