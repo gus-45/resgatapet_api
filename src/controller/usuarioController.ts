@@ -78,8 +78,8 @@ export class UserController {
             if (error.message.includes("já cadastrado")) {
                 return res.status(409).send({
                     success: false,
-                    message: error.message,
-                    errors: [error.message],
+                    message: "Erro de cadastro", 
+                    errors: [error.message], 
                 });
             }
 
@@ -94,7 +94,7 @@ export class UserController {
             res.status(500).send({
                 success: false,
                 message: "Erro interno do servidor",
-                errors: [error.message],
+                errors: [error.message], 
             });
         }
     };
