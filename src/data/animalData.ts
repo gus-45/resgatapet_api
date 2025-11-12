@@ -1,18 +1,9 @@
 import connection from "../dbConnection";
 
 import { PaginatedResponse } from "../dto/paginationDto";
-import { AnimalFilterDTO } from "../dto/animalFilterDto";
+import { AnimalFilterDTO, AnimalInputForDB } from "../dto/animalFilterDto";
 import { Animal } from "../types/animal";
 
-// atributos necessários para criar um Animal no banco sem o id_animal e o data que é gerada automaticamente
-type AnimalInputForDB = {
-    nome: string;
-    especie: string;
-    descricao: string;
-    status: string;
-    localizacao: string;
-    ong_id: number;
-}
 
 export class AnimalData {
 
@@ -81,7 +72,7 @@ export class AnimalData {
         }
     }
 
-    public async updateAnimal(id_animal: number, animal: AnimalInputForDB): Promise<void> {
+    public async updateAnimal(id_animal: number, animal: Partial<AnimalInputForDB>): Promise<void> { // <-- Alterar o tipo
         try {
             await connection('Animal').where({ id_animal }).update(animal);
         } catch (error: any) {
