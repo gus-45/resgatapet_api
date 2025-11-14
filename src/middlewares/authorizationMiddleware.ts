@@ -10,7 +10,7 @@ export class AuthorizationMiddleware {
         return res.status(401).send({ error: 'Usuário não autenticado' });
       }
 
-      if (req.user?.tipo === 'admin') {
+      if (req.user?.tipo === 'ADMIN') {
         return next();
       }
 
@@ -52,11 +52,11 @@ export class AuthorizationMiddleware {
         return res.status(401).send({ error: 'Usuário não autenticado' });
       }
 
-      if (req.user.tipo === 'admin') {
+      if (req.user.tipo === 'ADMIN') {
         return next();
       }
 
-      if (req.user.tipo === 'ong') {
+      if (req.user.tipo === 'ONG') {
         return next();
       }
 
