@@ -8,16 +8,16 @@ export const adocaoRouter = express.Router();
 const adocaoController = new AdocaoController();
 
 // Lista todas (ONG, Admin)
-adocaoRouter.get('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ong', 'admin'), adocaoController.getAll);
+adocaoRouter.get('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ONG', 'ADMIN'), adocaoController.getAll);
 
 // Busca por ID (Usuário, ONG, Admin)
 adocaoRouter.get('/:id', AuthMiddleware.authenticate, adocaoController.getById);
 
 // Cria (Usuário Comum autenticado)
-adocaoRouter.post("/", AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('comum'), adocaoController.create);
+adocaoRouter.post("/", AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('COMUM'), adocaoController.create);
 
 //  Atualiza status (ONG, Admin)
-adocaoRouter.put('/:id/status', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ong', 'admin'), adocaoController.updateStatus);
+adocaoRouter.put('/:id/status', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ONG', 'ADMIN'), adocaoController.updateStatus);
 
 // Remove (Admin - apenas Admin pode remover)
-adocaoRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), adocaoController.delete);
+adocaoRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), adocaoController.delete);

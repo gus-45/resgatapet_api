@@ -8,7 +8,7 @@ export const userRouter = express.Router();
 const userController = new UserController();
 
 // Lista todos os usuários ( apenas Admin)
-userRouter.get('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), userController.getAll);
+userRouter.get('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), userController.getAll);
 
 //  Busca por ID (próprio usuário ou Admin)
 userRouter.get('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorizeOwner, userController.getById);

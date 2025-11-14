@@ -15,13 +15,13 @@ ongRouter.get('/', ongController.getAll);
 ongRouter.get('/:id', ongController.getById);
 
 //Cadastra uma nova ONG (apenas Admin)
-ongRouter.post('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), ongController.create);
+ongRouter.post('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), ongController.create);
 
 // Atualiza uma ONG (Admin ou Admin da ONG)
 ongRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorizeOngOwner, ongController.update);
 
 // Remove uma ONG (apenas Admin)
-ongRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), ongController.delete);
+ongRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), ongController.delete);
 
 //  router de Doações como sub-recurso: /ongs/:id/doacoes
 ongRouter.use('/:id/doacoes', doacaoRouter);

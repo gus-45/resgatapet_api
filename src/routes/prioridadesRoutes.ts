@@ -14,10 +14,10 @@ prioridadeRouter.get('/', prioridadeController.getAll);
 prioridadeRouter.get('/:id', prioridadeController.getById);
 
 // Cria nova categoria (Admin)
-prioridadeRouter.post('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), prioridadeController.create);
+prioridadeRouter.post('/', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), prioridadeController.create);
 
 // Atualiza categoria (Admin)
-prioridadeRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), prioridadeController.update);
+prioridadeRouter.put('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), prioridadeController.update);
 
 // Remove categoria (Admin)
-prioridadeRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), prioridadeController.delete);
+prioridadeRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), prioridadeController.delete);

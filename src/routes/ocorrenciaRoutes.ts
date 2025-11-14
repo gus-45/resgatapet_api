@@ -17,7 +17,7 @@ ocorrenciaRouter.get('/:id', ocorrenciaController.getById);
 ocorrenciaRouter.post('/', ocorrenciaController.create);
 
 //Atualiza status (ONG, Admin)
-ocorrenciaRouter.put('/:id/status', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ong', 'admin'), ocorrenciaController.updateStatus);
+ocorrenciaRouter.put('/:id/status', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ONG', 'ADMIN'), ocorrenciaController.updateStatus);
 
 //Remove (Admin -  apenas Admin pode remover)
-ocorrenciaRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('admin'), ocorrenciaController.delete);
+ocorrenciaRouter.delete('/:id', AuthMiddleware.authenticate, AuthorizationMiddleware.authorize('ADMIN'), ocorrenciaController.delete);
