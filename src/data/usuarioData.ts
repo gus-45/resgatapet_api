@@ -81,9 +81,9 @@ export class UserData {
         }
     }
 
-    public async createUser(user: UsuarioInputParaBanco): Promise<number> {
+    public async createUser(user: UserInputForDB): Promise<number> {
         try {
-            const [id_usuario] = await connection('Usuario').insert(user);
+            const [id_usuario] = await connection('Usuario').insert(user, 'id_usuario');
             return id_usuario;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);

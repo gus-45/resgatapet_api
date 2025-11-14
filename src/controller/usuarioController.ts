@@ -78,23 +78,24 @@ export class UserController {
             if (error.message.includes("já cadastrado")) {
                 return res.status(409).send({
                     success: false,
-                    message: "Erro de cadastro", 
-                    errors: [error.message], 
+                    message: "Erro de cadastro",
+                    errors: [error.message],
                 });
             }
 
             if (error.message.includes("Dados de criação inválidos")) {
+                const errorDetails = error.message.split(": ")[1];
                 return res.status(400).send({
                     success: false,
                     message: "Erro de validação",
-                    errors: error.message.split(": ")[1].split("|").filter((e: string) => e.trim().length > 0),
+                    errors: errorDetails ? errorDetails.split("|").filter((e: string) => e.trim().length > 0) : [error.message]
                 });
             }
 
             res.status(500).send({
                 success: false,
                 message: "Erro interno do servidor",
-                errors: [error.message], 
+                errors: [error.message],
             });
         }
     };
