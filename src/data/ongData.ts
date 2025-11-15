@@ -76,9 +76,9 @@ export class OngData {
         }
     }
 
-    public async createOng(ong: OngInputDTO): Promise<number> {
+    public async createOng(ong: OngInputForDB): Promise<number> {
         try {
-            const [id_ong] = await connection('ONG').insert(ong);
+            const [id_ong] = await connection('ONG').insert(ong, 'id_ong');
             return id_ong;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);

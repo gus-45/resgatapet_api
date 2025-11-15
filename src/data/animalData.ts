@@ -65,14 +65,14 @@ export class AnimalData {
 
     public async createAnimal(animal: AnimalInputForDB): Promise<number> {
         try {
-            const [id_animal] = await connection('Animal').insert(animal);
+            const [id_animal] = await connection('Animal').insert(animal, 'id_animal');
             return id_animal;
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
     }
 
-    public async updateAnimal(id_animal: number, animal: Partial<AnimalInputForDB>): Promise<void> { // <-- Alterar o tipo
+    public async updateAnimal(id_animal: number, animal: Partial<AnimalInputForDB>): Promise<void> {
         try {
             await connection('Animal').where({ id_animal }).update(animal);
         } catch (error: any) {
