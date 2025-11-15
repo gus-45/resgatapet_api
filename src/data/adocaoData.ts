@@ -61,7 +61,7 @@ export class AdocaoData {
     }
     public async createAdocao(adocao: Omit<Adocao, "id_adocao">): Promise<void> {
         try {
-            await connection("Adocao").insert(adocao);
+            await connection("adocao").insert(adocao);
         } catch (error: any) {
             throw new Error(error.sqlMessage || error.message);
         }
