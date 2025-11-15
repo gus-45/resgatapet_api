@@ -2,11 +2,7 @@ import connection from "../dbConnection";
 import { User } from "../types/usuario";
 import { PaginatedResponse } from "../dto/paginationDto";
 import { UserFilterDTO } from "../dto/userFilterDto";
-import { UsuarioCreateDTO, UsuarioUpdateDTO, UsuarioInputForDB  } from "../dto/usuarioDto";
-
-type UsuarioInputParaBanco = UsuarioCreateDTO & {
-    data_criacao: Date;
-}
+import { UsuarioCreateDTO, UsuarioUpdateDTO, UsuarioInputForDB, UsuarioInputParaBanco } from "../dto/usuarioDto";
 
 export class UserData {
 

@@ -19,3 +19,7 @@ export interface UsuarioInputForDB  {
     tipo: string;
     data_criacao: Date;
 }
+
+export interface UsuarioInputParaBanco {
+    data_criacao: Date;
+}
